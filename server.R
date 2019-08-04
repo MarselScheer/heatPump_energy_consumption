@@ -13,10 +13,16 @@ get_current_time_as_text <- function() {
   format(lubridate::now(), "%Y-%m-%d %H:%M:%S")
 }
 
+load_historical_data <- function(fName) {
+  if (!file.exists(fName))
+    return(data.table::data.table())
+  
+  data.table::fread(fName)
+}
 
 shinyServer(function(input, output, session) {
 
-  data <- reactiveValues(pwr = data.table::data.table())
+  data <- reactiveValues(pwr = load_historical_data(isolate(input$file_save)))
   
   observeEvent(input$file_pwr, {
     inFile <- input$file_pwr
@@ -27,7 +33,7 @@ shinyServer(function(input, output, session) {
     data$pwr <- data.table::fread(inFile$datapath)
   })
   
-  save_entry <- eventReactive(input$save, {
+  observeEvent(input$save, {
     data$pwr <- rbind(
       data.table::data.table(
         time = input$time, 
@@ -38,6 +44,7 @@ shinyServer(function(input, output, session) {
     )
     # just in case some hits the save button twice
     data$pwr <- unique(data$pwr)
+    data.table::fwrite(data$pwr, isolate(input$file_save))
     data$pwr
   })
   
@@ -50,7 +57,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$power_indicator_by_time <- renderDataTable({
-    save_entry()
+    data$pwr
   })
   
   observeEvent(input$update_time_to_now, {
