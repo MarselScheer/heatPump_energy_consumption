@@ -6,18 +6,21 @@
 #
 
 library(shiny)
+library(ggplot2)
+library(data.table)
 
 shinyServer(function(input, output) {
 
-  output$distPlot <- renderPlot({
+  output$temp_vs_power_consumption <- renderPlot({
 
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
+    dt <- data.table::data.table(temp = rnorm(100, mean = input$temperature_outside))
+    dt[, power_consumption := -1 * temp + rnorm(100)]
+    ggplot(dt, aes(x = temp, y = power_consumption)) + 
+      geom_point()
   })
-
+  
+  output$power_indicator_by_time <- renderDataTable({
+    data.frame(a = "a", b = 1:4)
+  })
+  
 })
