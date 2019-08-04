@@ -9,8 +9,14 @@ library(shiny)
 library(ggplot2)
 library(data.table)
 
-shinyServer(function(input, output) {
+get_current_time_as_text <- function() {
+  format(lubridate::now(), "%Y-%m-%d %H:%M:%S")
+}
 
+
+shinyServer(function(input, output, session) {
+
+  
   output$temp_vs_power_consumption <- renderPlot({
 
     dt <- data.table::data.table(temp = rnorm(100, mean = input$temperature_outside))
@@ -23,4 +29,7 @@ shinyServer(function(input, output) {
     data.frame(a = "a", b = 1:4)
   })
   
+  observeEvent(input$update_time_to_now, {
+    updateTextInput(session, "time", value = get_current_time_as_text())
+  })
 })
