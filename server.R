@@ -50,9 +50,7 @@ shinyServer(function(input, output, session) {
   
   output$temp_vs_power_consumption <- renderPlot({
 
-    dt <- data.table::data.table(temp = rnorm(100, mean = input$temperature_outside))
-    dt[, power_consumption := -1 * temp + rnorm(100)]
-    ggplot(dt, aes(x = temp, y = power_consumption)) + 
+    ggplot(data$pwr, aes(x = temperature_outside, y = power_indicator)) + 
       geom_point()
   })
   
