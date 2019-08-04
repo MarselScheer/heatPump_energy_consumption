@@ -16,6 +16,19 @@ get_current_time_as_text <- function() {
 
 shinyServer(function(input, output, session) {
 
+  data <- reactiveValues(pwr = data.table::data.table())
+  
+  save_entry <- eventReactive(input$save, {
+    data$pwr <- rbind(
+      data$pwr, 
+      data.table::data.table(
+        time = input$time, 
+        temperature_outside = input$temperature_outside, 
+        power_indicator = input$power_indicator, 
+        heatPump_settings = input$heatPump_settings)
+    )
+    data$pwr
+  })
   
   output$temp_vs_power_consumption <- renderPlot({
 
@@ -26,7 +39,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$power_indicator_by_time <- renderDataTable({
-    data.frame(a = "a", b = 1:4)
+    save_entry()
   })
   
   observeEvent(input$update_time_to_now, {

@@ -16,7 +16,7 @@ shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       numericInput("temperature_outside", label = "Temperature outside:", value = 0.0, min = -80, max = 80, step = 0.1),
-      numericInput("power", label = "Value of power indicator:", value = 12000, min = 0, max = Inf, step = 1),
+      numericInput("power_indicator", label = "Value of power indicator:", value = 12000, min = 0, max = Inf, step = 1),
       textInput("time", "Time:", value = lubridate::now()),
       actionButton("update_time_to_now", label = "Update Time"),
       textAreaInput("heatPump_settings", "Settings of the heat pump", value = "Professional tweaked settings on 2019-08-01; 100L Buffer activated"),
