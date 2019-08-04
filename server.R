@@ -9,6 +9,8 @@ library(shiny)
 library(ggplot2)
 library(data.table)
 
+#options(shiny.port = 7775); options(shiny.host = "192.168.1.11")
+
 get_current_time_as_text <- function() {
   format(lubridate::now(), "%Y-%m-%d %H:%M:%S")
 }
