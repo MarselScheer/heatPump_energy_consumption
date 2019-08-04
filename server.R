@@ -29,13 +29,15 @@ shinyServer(function(input, output, session) {
   
   save_entry <- eventReactive(input$save, {
     data$pwr <- rbind(
-      data$pwr, 
       data.table::data.table(
         time = input$time, 
         temperature_outside = input$temperature_outside, 
         power_indicator = input$power_indicator, 
-        heatPump_settings = input$heatPump_settings)
+        heatPump_settings = input$heatPump_settings),
+      data$pwr
     )
+    # just in case some hits the save button twice
+    data$pwr <- unique(data$pwr)
     data$pwr
   })
   
