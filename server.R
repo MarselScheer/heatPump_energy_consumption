@@ -18,6 +18,15 @@ shinyServer(function(input, output, session) {
 
   data <- reactiveValues(pwr = data.table::data.table())
   
+  observeEvent(input$file_pwr, {
+    inFile <- input$file_pwr
+    
+    if (is.null(inFile))
+      return(NULL)
+    
+    data$pwr <- data.table::fread(inFile$datapath)
+  })
+  
   save_entry <- eventReactive(input$save, {
     data$pwr <- rbind(
       data$pwr, 

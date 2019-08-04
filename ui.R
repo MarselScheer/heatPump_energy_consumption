@@ -15,6 +15,7 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
+      fileInput("file_pwr", label = "Load historical data:"),
       numericInput("temperature_outside", label = "Temperature outside:", value = 0.0, min = -80, max = 80, step = 0.1),
       numericInput("power_indicator", label = "Value of power indicator:", value = 12000, min = 0, max = Inf, step = 1),
       textInput("time", "Time:", value = lubridate::now()),
