@@ -10,21 +10,25 @@ library(shiny)
 shinyUI(fluidPage(
 
   # Application title
-  titlePanel("Old Faithful Geyser Data"),
+  titlePanel("Energy consumption of the heat pump"),
 
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
-      sliderInput("bins",
-                  "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30)
+      textInput("file_save", "Save location:", value = "~/Documents/data/shinyApps/heatpump/power_by_time.csv"),
+      numericInput("temperature_outside", label = "Temperature outside:", value = 0.0, min = -80, max = 80, step = 0.1),
+      numericInput("power_indicator", label = "Value of power indicator:", value = 12000, min = 0, max = Inf, step = 1),
+      textInput("time", "Time:", value = lubridate::now()),
+      actionButton("update_time_to_now", label = "Update Time"),
+      textAreaInput("heatPump_settings", "Settings of the heat pump", value = "Professional tweaked settings on 2019-08-01; 100L Buffer activated"),
+      actionButton("save", label = "Save"),
+      fileInput("file_pwr", label = "Load historical data (if necessary):")
     ),
 
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot")
+      plotOutput("temp_vs_power_consumption"),
+      dataTableOutput("power_indicator_by_time")
     )
   )
 ))
