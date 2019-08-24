@@ -18,6 +18,9 @@ get_current_time_as_text <- function() {
 }
 
 prep_data_for_plotting <- function(dt) {
+  if (nrow(dt) < 2) {
+     return(NULL)
+  }
   dt <- data.table::copy(dt)
   dt[, ':='(
     diff_time_in_days = as.numeric(time - data.table::shift(time), units = "days"), 
@@ -67,7 +70,9 @@ shinyServer(function(input, output, session) {
   output$temp_vs_power_consumption <- renderPlot({
 
     dt <- prep_data_for_plotting(data$pwr)
-    
+    if (is.null(dt)) {
+       return(ggplot())
+    }
     ggplot(
       dt[data.table::shift(heatPump_settings) == heatPump_settings & diff_time_in_days < 2],
       aes(
