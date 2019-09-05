@@ -49,7 +49,7 @@ shinyServer(function(input, output, session) {
     if (is.null(inFile))
       return(NULL)
     
-    data$pwr <- data.table::fread(inFile$datapath)
+    data$pwr <- load_historical_data(inFile$datapath)
   })
   
   observeEvent(input$save, {
