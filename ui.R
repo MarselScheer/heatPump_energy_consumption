@@ -23,7 +23,7 @@ shinyUI(fluidPage(
       textAreaInput("heatPump_settings", "Settings of the heat pump", value = "Professional tweaked settings on 2019-08-01; 100L Buffer activated"),
       actionButton("save", label = "Save"),
       fileInput("file_pwr", label = "Load historical data (if necessary):"),
-      p("Version: 0.1.0", style = "font-size:9px;float:right")
+      p("Version: 0.1.0.9000", style = "font-size:9px;float:right")
     ),
 
     # Show a plot of the generated distribution
