@@ -37,10 +37,10 @@ prep_data_for_plotting <- function(dt) {
 
 #' imports data from a file and updates input elements with the latest entries
 #'
-#' currently updates temperature_outside and power_indicator
 #' @param fName file name for import
 #' @param session needed to update the input elements
-#'
+#' @seealso update_input_with_last_dataentries
+#' 
 #' @return imported file as a data.table or just an empty data.table is file does not exist
 load_historical_data <- function(fName, session) {
   logger::log_debug()
@@ -53,9 +53,9 @@ load_historical_data <- function(fName, session) {
   dt
 }
 
-#' Updates temperature_outside and power_indicator
+#' Updates temperature_outside, power_indicator and heatPump_settings
 #'
-#' @param pwr first row of this data.table is used to update temerature_outside and power_indicator
+#' @param pwr first row of this data.table is used to update temerature_outside, power_indicator and heatPump_settings
 #' @param session needed to update the input elements
 update_input_with_last_dataentries <- function(pwr, session) {
   logger::log_debug()
@@ -63,6 +63,7 @@ update_input_with_last_dataentries <- function(pwr, session) {
   if (nrow(pwr) > 0) {
     updateNumericInput(session, "temperature_outside", value = pwr$temperature_outside[1])
     updateNumericInput(session, "power_indicator", value = pwr$power_indicator[1])
+    updateNumericInput(session, "heatPump_settings", value = pwr$heatPump_settings[1])
   }
 }
 
