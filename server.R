@@ -14,10 +14,12 @@ library(logger)
 to_time <- function(str) {
   lubridate::ymd_hms(str)
 }
+
 get_current_time_as_text <- function() {
   format(lubridate::now(), "%Y-%m-%d %H:%M:%S")
 }
 
+#' calcualtes cost per day and mean temperature in order to plot them
 prep_data_for_plotting <- function(dt) {
   logger::log_debug()
   
@@ -33,6 +35,13 @@ prep_data_for_plotting <- function(dt) {
   dt
 }
 
+#' imports data from a file and updates input elements with the latest entries
+#'
+#' currently updates temperature_outside and power_indicator
+#' @param fName file name for import
+#' @param session needed to update the input elements
+#'
+#' @return imported file as a data.table or just an empty data.table is file does not exist
 load_historical_data <- function(fName, session) {
   logger::log_debug()
   if (!file.exists(fName))
@@ -44,6 +53,10 @@ load_historical_data <- function(fName, session) {
   dt
 }
 
+#' Updates temperature_outside and power_indicator
+#'
+#' @param pwr first row of this data.table is used to update temerature_outside and power_indicator
+#' @param session needed to update the input elements
 update_input_with_last_dataentries <- function(pwr, session) {
   logger::log_debug()
   
@@ -53,6 +66,7 @@ update_input_with_last_dataentries <- function(pwr, session) {
   }
 }
 
+#' Initialize the logger
 init_logger <- function() {
   logger::log_threshold(logger::DEBUG)
   log_layout(layout_glue_generator(format = '{node}/{pid}/{call} {time} {level}: {msg}'))
@@ -66,6 +80,7 @@ shinyServer(function(input, output, session) {
   data <- reactiveValues(pwr = load_historical_data(isolate(input$file_save), session))
   
   observeEvent(input$file_pwr, {
+    # clicking the Load historical data button
     inFile <- input$file_pwr
     
     if (is.null(inFile))
@@ -75,6 +90,7 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$save, {
+    # clicking the save button
     data$pwr <- rbind(
       data.table::data.table(
         time = to_time(input$time), 
@@ -113,6 +129,7 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$update_time_to_now, {
+    # clicking update time button
     updateTextInput(session, "time", value = get_current_time_as_text())
   })
 })
