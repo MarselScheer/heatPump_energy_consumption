@@ -8,6 +8,7 @@
 library(shiny)
 library(ggplot2)
 library(data.table)
+library(logger)
 
 #options(shiny.port = 7775); options(shiny.host = "192.168.1.11")
 to_time <- function(str) {
@@ -18,6 +19,8 @@ get_current_time_as_text <- function() {
 }
 
 prep_data_for_plotting <- function(dt) {
+  logger::log_debug()
+  
   if (nrow(dt) < 2) {
      return(NULL)
   }
@@ -30,18 +33,37 @@ prep_data_for_plotting <- function(dt) {
   dt
 }
 
-load_historical_data <- function(fName) {
+load_historical_data <- function(fName, session) {
+  logger::log_debug()
   if (!file.exists(fName))
     return(data.table::data.table())
   
   dt <- data.table::fread(fName)
   dt[, time := to_time(time)]
+  update_input_with_last_dataentries(dt, session)
   dt
+}
+
+update_input_with_last_dataentries <- function(pwr, session) {
+  logger::log_debug()
+  
+  if (nrow(pwr) > 0) {
+    updateNumericInput(session, "temperature_outside", value = pwr$temperature_outside[1])
+    updateNumericInput(session, "power_indicator", value = pwr$power_indicator[1])
+  }
+}
+
+init_logger <- function() {
+  logger::log_threshold(logger::DEBUG)
+  log_layout(layout_glue_generator(format = '{node}/{pid}/{call} {time} {level}: {msg}'))
 }
 
 shinyServer(function(input, output, session) {
 
-  data <- reactiveValues(pwr = load_historical_data(isolate(input$file_save)))
+  init_logger()
+  logger::log_debug()
+  
+  data <- reactiveValues(pwr = load_historical_data(isolate(input$file_save), session))
   
   observeEvent(input$file_pwr, {
     inFile <- input$file_pwr
@@ -49,7 +71,7 @@ shinyServer(function(input, output, session) {
     if (is.null(inFile))
       return(NULL)
     
-    data$pwr <- load_historical_data(inFile$datapath)
+    data$pwr <- load_historical_data(inFile$datapath, session)
   })
   
   observeEvent(input$save, {
@@ -68,7 +90,8 @@ shinyServer(function(input, output, session) {
   })
   
   output$temp_vs_power_consumption <- renderPlot({
-
+    logger::log_debug()
+    
     dt <- prep_data_for_plotting(data$pwr)
     if (is.null(dt)) {
        return(ggplot())
