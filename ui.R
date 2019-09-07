@@ -23,7 +23,7 @@ shinyUI(fluidPage(
       textAreaInput("heatPump_settings", "Settings of the heat pump", value = "Professional tweaked settings on 2019-08-01; 100L Buffer activated"),
       actionButton("save", label = "Save"),
       fileInput("file_pwr", label = "Load historical data (if necessary):"),
-      p("Version: 0.1.0", style = "font-size:9px;float:right")
+      p("Version: 0.1.1", style = "font-size:9px;float:right")
     ),
 
     # Show a plot of the generated distribution
@@ -35,13 +35,17 @@ shinyUI(fluidPage(
           dataTableOutput("power_indicator_by_time")),
         tabPanel(
           "Changelog", 
+          
+          h1("v0.1.1"),
+          p("- temperature outside, power indicator and heatpump settings are initialized with the latest stored values"),
+          
           h1("v0.1.0"),
           p("- data is stored as plain csv"),
           p("- data can be loaded"),
           p("- temperature and value of power indicator can be entered manually"),
           p("- free text that describes the settings can be added"),
           p("- scatterplot of cost per day versus temperature with simple linear regression stratified by the free text for the settings"))
-        )
+      )
       )
     )
   )
