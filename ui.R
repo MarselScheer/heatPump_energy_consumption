@@ -38,6 +38,7 @@ shinyUI(fluidPage(
           
           h1("v0.1.2"),
           p("- input element for temperature is not initialized with an integer (in order to gurantee that a decimal point is available) "),
+          p("- time-element is updated with the current time when temperature outside, power indicator and heatpump settings are initialized with the latest stored values "),
           
           h1("v0.1.1"),
           p("- temperature outside, power indicator and heatpump settings are initialized with the latest stored values"),

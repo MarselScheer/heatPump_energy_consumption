@@ -53,8 +53,9 @@ load_historical_data <- function(fName, session) {
   dt
 }
 
-#' Updates temperature_outside, power_indicator and heatPump_settings
+#' Updates temperature_outside, power_indicator, heatPump_settings as well as the time-input
 #'
+#' The time-input is updated with the current time.
 #' @param pwr first row of this data.table is used to update temerature_outside, power_indicator and heatPump_settings
 #' @param session needed to update the input elements
 update_input_with_last_dataentries <- function(pwr, session) {
@@ -75,6 +76,7 @@ update_input_with_last_dataentries <- function(pwr, session) {
     updateNumericInput(session, "temperature_outside", value = pwr$temperature_outside[1] + offset)
     updateNumericInput(session, "power_indicator", value = pwr$power_indicator[1])
     updateNumericInput(session, "heatPump_settings", value = pwr$heatPump_settings[1])
+    updateTextInput(session, "time", value = get_current_time_as_text())
   }
 }
 
