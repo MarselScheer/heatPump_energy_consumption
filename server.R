@@ -53,17 +53,30 @@ load_historical_data <- function(fName, session) {
   dt
 }
 
-#' Updates temperature_outside, power_indicator and heatPump_settings
+#' Updates temperature_outside, power_indicator, heatPump_settings as well as the time-input
 #'
+#' The time-input is updated with the current time.
 #' @param pwr first row of this data.table is used to update temerature_outside, power_indicator and heatPump_settings
 #' @param session needed to update the input elements
 update_input_with_last_dataentries <- function(pwr, session) {
   logger::log_debug()
   
   if (nrow(pwr) > 0) {
-    updateNumericInput(session, "temperature_outside", value = pwr$temperature_outside[1])
+    
+    offset <- 0
+    if (round(pwr$temperature_outside[1]) == pwr$temperature_outside[1]) {
+      # strange effect that some phones does not offer a decimal point for temperature.
+      # if the last temperature than was an integer, the decimal is also not contained
+      # in the input-element, i.e. it displays 17 instead of 17.0, which makes it even harder
+      # to enter a new number with a decimal.
+      # make sure that temperature used to init the input-element is not an integer
+      offset <- 0.1      
+    }
+    
+    updateNumericInput(session, "temperature_outside", value = pwr$temperature_outside[1] + offset)
     updateNumericInput(session, "power_indicator", value = pwr$power_indicator[1])
     updateNumericInput(session, "heatPump_settings", value = pwr$heatPump_settings[1])
+    updateTextInput(session, "time", value = get_current_time_as_text())
   }
 }
 
