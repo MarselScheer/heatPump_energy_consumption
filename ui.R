@@ -50,6 +50,9 @@ shinyUI(fluidPage(
           h1("v0.2.0.9000"),
           p("- Filter for start date and maximal cost per day in the plot"),
           
+          h1("v0.1.3"),
+          p("- table below the plot is editable. Changes are directly written to disk. "),
+
           h1("v0.1.2"),
           p("- input element for temperature is not initialized with an integer (in order to gurantee that a decimal point is available) "),
           p("- time-element is updated with the current time when temperature outside, power indicator and heatpump settings are initialized with the latest stored values "),
