@@ -85,6 +85,23 @@ update_input_with_last_dataentries <- function(pwr, session) {
   }
 }
 
+add_row <- function(input, data) {
+  data$pwr <- rbind(
+    data.table::data.table(
+      time = to_time(input$time), 
+      temperature_outside = input$temperature_outside, 
+      power_indicator = input$power_indicator, 
+      heatPump_settings = input$heatPump_settings),
+    data$pwr
+  )
+  # just in case some hits enters an entry that already exists
+  data$pwr <- unique(data$pwr)
+}
+
+save_2_hdd <- function(input, data) {
+  data.table::fwrite(data$pwr, isolate(input$file_save))
+}
+
 #' Initialize the logger
 init_logger <- function() {
   logger::log_threshold(logger::DEBUG)
@@ -109,19 +126,8 @@ shinyServer(function(input, output, session) {
   })
   
   observeEvent(input$save, {
-    # clicking the save button
-    data$pwr <- rbind(
-      data.table::data.table(
-        time = to_time(input$time), 
-        temperature_outside = input$temperature_outside, 
-        power_indicator = input$power_indicator, 
-        heatPump_settings = input$heatPump_settings),
-      data$pwr
-    )
-    # just in case some hits the save button twice
-    data$pwr <- unique(data$pwr)
-    data.table::fwrite(data$pwr, isolate(input$file_save))
-    data$pwr
+    data$pwr <- add_row(input = input, data = data)
+    save_2_hdd(input = input, data = data)
   })
   observeEvent({
     input$plot_start_date
