@@ -9,6 +9,7 @@ library(shiny)
 library(ggplot2)
 library(data.table)
 library(logger)
+library(DT)
 
 #options(shiny.port = 7775); options(shiny.host = "192.168.1.11")
 to_time <- function(str) {
@@ -160,10 +161,12 @@ shinyServer(function(input, output, session) {
     })
   })
   
-  output$power_indicator_by_time <- renderDataTable({
-    data$pwr
+  output$power_indicator_by_time <- DT::renderDT(expr = data$pwr, editable = TRUE)
+  observeEvent(input$power_indicator_by_time_cell_edit, {
+    data$pwr <- DT::editData(data$pwr, input$power_indicator_by_time_cell_edit, 'power_indicator_by_time')
+    save_2_hdd(input = input, data = data)
   })
-  
+
   observeEvent(input$update_time_to_now, {
     # clicking update time button
     updateTextInput(session, "time", value = get_current_time_as_text())
