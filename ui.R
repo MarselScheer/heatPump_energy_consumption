@@ -23,18 +23,32 @@ shinyUI(fluidPage(
       textAreaInput("heatPump_settings", "Settings of the heat pump", value = "Professional tweaked settings on 2019-08-01; 100L Buffer activated"),
       actionButton("save", label = "Save"),
       fileInput("file_pwr", label = "Load historical data (if necessary):"),
-      p("Version: 0.1.2", style = "font-size:9px;float:right")
+      p("Version: 0.2.0", style = "font-size:9px;float:right")
     ),
 
     # Show a plot of the generated distribution
     mainPanel(
       tabsetPanel(
         tabPanel(
-          "Summary", 
+          "Summary",
           plotOutput("temp_vs_power_consumption"),
-          dataTableOutput("power_indicator_by_time")),
+          textAreaInput(
+            "plot_start_date",
+            "Plot start date",
+            value = lubridate::now() - 2 * 365 * 3600 * 24
+          ),
+          numericInput(
+            "max_cost_per_day",
+            "Max cost per day",
+            value = 15
+          ),
+          dataTableOutput("power_indicator_by_time")
+        ),
         tabPanel(
           "Changelog", 
+
+          h1("v0.2.0"),
+          p("- Filter for start date and maximal cost per day in the plot"),
           
           h1("v0.1.2"),
           p("- input element for temperature is not initialized with an integer (in order to gurantee that a decimal point is available) "),
