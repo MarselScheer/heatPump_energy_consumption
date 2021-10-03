@@ -20,13 +20,14 @@ get_current_time_as_text <- function() {
 }
 
 #' calcualtes cost per day and mean temperature in order to plot them
-prep_data_for_plotting <- function(dt) {
+prep_data_for_plotting <- function(dt, plot_start_date) {
   logger::log_debug()
-  
+
+  dt <- data.table::copy(dt)
+  dt <- dt[plot_start_date <= time]
   if (nrow(dt) < 2) {
      return(NULL)
   }
-  dt <- data.table::copy(dt)
   dt[, ':='(
     diff_time_in_days = as.numeric(time - data.table::shift(time), units = "days"), 
     diff_power = power_indicator - data.table::shift(power_indicator),
@@ -118,24 +119,28 @@ shinyServer(function(input, output, session) {
     data.table::fwrite(data$pwr, isolate(input$file_save))
     data$pwr
   })
-  
-  output$temp_vs_power_consumption <- renderPlot({
-    logger::log_debug()
-    
-    dt <- prep_data_for_plotting(data$pwr)
-    if (is.null(dt)) {
-       return(ggplot())
-    }
-    ggplot(
-      dt[data.table::shift(heatPump_settings) == heatPump_settings & diff_time_in_days < 2],
-      aes(
-        x = mean_temp, 
-        y = cost_per_day, 
-        color = heatPump_settings)) +
-      ylab("Cost per day in EURO") + 
-      geom_point(alpha = 0.5) + 
-      geom_smooth(method = "lm") + 
-      theme(legend.position = "top")
+  observeEvent(input$plot_start_date, {
+    output$temp_vs_power_consumption <- renderPlot({
+      logger::log_debug()
+
+      dt <- prep_data_for_plotting(data$pwr, to_time(input$plot_start_date))
+      if (is.null(dt)) {
+        return(ggplot())
+      }
+      ggplot(
+        dt[data.table::shift(heatPump_settings) == heatPump_settings &
+             diff_time_in_days < 2],
+        aes(
+          x = mean_temp,
+          y = cost_per_day,
+          color = heatPump_settings
+        )
+      ) +
+        ylab("Cost per day in EURO") +
+        geom_point(alpha = 0.5) +
+        geom_smooth(method = "lm") +
+        theme(legend.position = "top")
+    })
   })
   
   output$power_indicator_by_time <- renderDataTable({

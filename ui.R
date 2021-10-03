@@ -30,11 +30,20 @@ shinyUI(fluidPage(
     mainPanel(
       tabsetPanel(
         tabPanel(
-          "Summary", 
+          "Summary",
           plotOutput("temp_vs_power_consumption"),
-          dataTableOutput("power_indicator_by_time")),
+          textAreaInput(
+            "plot_start_date",
+            "Plot start date",
+            value = lubridate::now() - 2 * 365 * 3600 * 24
+          ),
+          dataTableOutput("power_indicator_by_time")
+        ),
         tabPanel(
           "Changelog", 
+
+          h1("v0.2.0"),
+          p("- Dynamic filter for what time frame is shown in the plot"),
           
           h1("v0.1.2"),
           p("- input element for temperature is not initialized with an integer (in order to gurantee that a decimal point is available) "),
