@@ -37,13 +37,18 @@ shinyUI(fluidPage(
             "Plot start date",
             value = lubridate::now() - 2 * 365 * 3600 * 24
           ),
+          numericInput(
+            "max_cost_per_day",
+            "Max cost per day",
+            value = 15
+          ),
           dataTableOutput("power_indicator_by_time")
         ),
         tabPanel(
           "Changelog", 
 
-          h1("v0.2.0"),
-          p("- Dynamic filter for what time frame is shown in the plot"),
+          h1("v0.1.2.9000"),
+          p("- Filter for start date and maximal cost per day in the plot"),
           
           h1("v0.1.2"),
           p("- input element for temperature is not initialized with an integer (in order to gurantee that a decimal point is available) "),

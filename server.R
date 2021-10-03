@@ -20,7 +20,7 @@ get_current_time_as_text <- function() {
 }
 
 #' calcualtes cost per day and mean temperature in order to plot them
-prep_data_for_plotting <- function(dt, plot_start_date) {
+prep_data_for_plotting <- function(dt, plot_start_date, max_cost_per_day) {
   logger::log_debug()
 
   dt <- data.table::copy(dt)
@@ -33,6 +33,10 @@ prep_data_for_plotting <- function(dt, plot_start_date) {
     diff_power = power_indicator - data.table::shift(power_indicator),
     mean_temp = (temperature_outside + data.table::shift(temperature_outside))/2)]
   dt[, cost_per_day := diff_power/diff_time_in_days  * 0.25]
+  dt <- dt[cost_per_day <= max_cost_per_day]
+  if (nrow(dt) < 2) {
+     return(NULL)
+  }
   dt
 }
 
@@ -119,11 +123,18 @@ shinyServer(function(input, output, session) {
     data.table::fwrite(data$pwr, isolate(input$file_save))
     data$pwr
   })
-  observeEvent(input$plot_start_date, {
+  observeEvent({
+    input$plot_start_date
+    input$max_cost_per_day
+  }, {
     output$temp_vs_power_consumption <- renderPlot({
       logger::log_debug()
 
-      dt <- prep_data_for_plotting(data$pwr, to_time(input$plot_start_date))
+      dt <- prep_data_for_plotting(
+        dt = data$pwr,
+        plot_start_date = to_time(input$plot_start_date),
+        max_cost_per_day = input$max_cost_per_day
+      )
       if (is.null(dt)) {
         return(ggplot())
       }
